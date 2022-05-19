@@ -1,12 +1,3 @@
 {
-   "users": [
-      {
-         "id": 1,
-         "username": "florentazd",
-         "nom": "Azd",
-         "prenom": "Florent",
-         "motDePasse": "toto",
-         "email": "florent4real"
-      }
-   ]
+   "users": []
 }
