@@ -3,6 +3,7 @@
   import Login from "../pages/login.svelte";
   import Signup from "../pages/signup.svelte";
   import Index from "../pages/index.svelte";
+  import User from "../pages/user.svelte";
 
   // COMPONENTS
   import Navbar from "../components/banner.svelte";
@@ -12,6 +13,7 @@
     nav_url = "";
   import "../node_modules/bulma/css/bulma.min.css";
   import "../node_modules/bootstrap-icons/font/bootstrap-icons.css";
+
   if (location.href.includes("login")) {
     nav_url = "login";
   } else {
@@ -25,16 +27,16 @@
       }
     }
   }
-  console.log(url);
 </script>
 
 <main>
   <Navbar url={nav_url} />
   <Router {url}>
     <Route path="/"><Index /></Route>
-    <Route path="home/:username"><Home username="fze" /></Route>
+    <Route path="home/"><Home /></Route>
     <Route path="login"><Login /></Route>
     <Route path="signup"><Signup /></Route>
+    <Route path="user/:username"><User /></Route>
   </Router>
 </main>
 

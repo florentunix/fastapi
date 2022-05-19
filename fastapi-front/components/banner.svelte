@@ -7,8 +7,13 @@
     <a href="/signup"><button class="button is-primary">Inscription</button></a>
   {:else if url == "home"}
     <div>
-      <span>Username</span>
-      <button class="button is-primary">Deconnexion</button>
+      <button
+        on:click={() => {
+          window.localStorage.clear();
+          location.href = "/login";
+        }}
+        class="button is-primary">Deconnexion</button
+      >
     </div>
   {:else if url == "signup"}
     <a href="./login"><button class="button is-primary">Connexion</button></a>

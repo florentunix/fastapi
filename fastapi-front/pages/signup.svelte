@@ -1,14 +1,38 @@
 <script>
+  import base64 from "base-64";
+  import User from "./user.svelte";
+  let bannerEL;
+  const reader = new FileReader();
   let form = {
+    username: "",
     nom: "",
     prenom: "",
-    nomUtilisateur: "",
     mail: "",
     motDePasse: "",
     confMotDePasse: "",
     description: "",
+    banner: "",
     check: true,
   };
+  let fileExist = false;
+  async function sendSignupForm() {
+    for (let item in form) {
+      if (item != "banner" && item != "check") {
+        if (!item) return;
+      }
+    }
+    // fetch
+    // console.log(JSON.stringify(form));
+    fetch("http://localhost:8000/addUser", {
+      method: "POST",
+      body: JSON.stringify(form),
+    });
+  }
+
+  // for (let item in form) {
+  //   console.log(form[item]);
+  // }
+  // console.log(base64.encode("Hello"));
 </script>
 
 <section>
@@ -48,7 +72,7 @@
   <div class="field">
     <div class="control has-icons-left has-icons-right">
       <input
-        bind:value={form.nomUtilisateur}
+        bind:value={form.username}
         class="input  is-medium"
         type="text"
         placeholder="Nom d'utilisateur"
@@ -115,6 +139,36 @@
     </div>
     <!-- <p class="help is-danger">This email is invalid</p> -->
   </div>
+  <div class="file is-medium">
+    <label class="file-label">
+      <input
+        on:change={() => {
+          // console.log(form.banner.files[0]);
+          // Lecture du fichier
+          reader.onload = function () {
+            form.banner = reader.result;
+            console.log(form.banner);
+          };
+          reader.readAsDataURL(bannerEL.files[0]);
+          fileExist = true;
+        }}
+        bind:this={bannerEL}
+        class="file-input"
+        type="file"
+        name="resume"
+      />
+      <span class="file-cta">
+        <span class="file-icon">
+          <i class="bi bi-image" />
+        </span>
+        <span class="file-label">
+          {fileExist
+            ? bannerEL.files[0].name
+            : "Ajouter une photo de profile… "}</span
+        >
+      </span>
+    </label>
+  </div>
 
   <div class="field">
     <div class="control">
@@ -132,7 +186,9 @@
   </div>
 
   <div class="control submit-container">
-    <button class="button is-primary is-outlined">Submit</button>
+    <button on:click={sendSignupForm} class="button is-primary is-outlined"
+      >Submit</button
+    >
   </div>
 </section>
 
@@ -155,5 +211,16 @@
   }
   input {
     padding-left: 50px;
+  }
+  .file {
+    width: 100%;
+    margin-bottom: 10px;
+    background-color: transparent;
+  }
+  .file label,
+  .file-cta {
+    width: 100%;
+    background-color: transparent;
+    color: rgb(0, 0, 0, 0.1);
   }
 </style>

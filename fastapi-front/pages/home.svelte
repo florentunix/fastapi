@@ -1,91 +1,129 @@
 <script>
+  let userExist;
+  // Change after by a session token
+  if (!localStorage.getItem("username")) {
+    userExist = false;
+    location.href = "../login";
+  } else {
+    userExist = true;
+  }
   let mod = false;
   let modDesc = false;
   let user = {
-    nom: "",
-    prenom: "",
-    description: "Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum",
+    nom: localStorage.getItem("nom"),
+    prenom: localStorage.getItem("prenom"),
+    description: localStorage.getItem("description"),
+    username: localStorage.getItem("username"),
   };
 </script>
 
-<section>
-  <div class="card">
-    <div class="card-content">
-      <div class="media">
-        <div class="media-left">
-          <figure class="image is-48x48">
-            <img
-              src="https://bulma.io/images/placeholders/96x96.png"
-              alt="Placeholderd"
-            />
-          </figure>
-        </div>
-        <div class="media-content">
-          <p class="title is-4">
-            <span>{user.nom}</span> <span>{user.prenom}</span>
-          </p>
-          <p class="subtitle is-6">@johnsmith</p>
-        </div>
+{#if userExist}
+  <section>
+    <div class="card">
+      <div class="card-image">
+        <figure class="image">
+          <img
+            src="https://bulma.io/images/placeholders/1280x960.png"
+            alt="Placeholder"
+          />
+        </figure>
       </div>
+      <div class="card-content">
+        <div class="media">
+          <div class="media-left">
+            <figure class="image is-48x48">
+              <img
+                src="https://bulma.io/images/placeholders/96x96.png"
+                alt="Placeholderd"
+              />
+            </figure>
+          </div>
+          <div class="media-content">
+            <p class="title is-4">
+              <span>{user.prenom}</span>
+              <span>{user.nom}</span>
+            </p>
+            <p class="subtitle is-6">@{user.username}</p>
+          </div>
+        </div>
 
-      <div class="content">
-        {user.description}
-        <br />
+        <div class="content">
+          {user.description}
+          <br />
+        </div>
+      </div>
+      <div class="action-button">
+        {#if mod}
+          <div class="modify-user">
+            <input
+              bind:value={user.prenom}
+              class="input is-primary "
+              placeholder="Nom de Famille"
+              type="text"
+            />
+            <input
+              bind:value={user.nom}
+              class="input is-primary"
+              placeholder="Prénom"
+              type="text"
+            />
+          </div>
+        {/if}
+        <button
+          on:click={() => {
+            mod = !mod;
+          }}
+          class="button is-primary is-outlined"
+          >{mod
+            ? "Enregistrer les modifications"
+            : "Modifier l'utilisateur"}</button
+        >
+        {#if modDesc}
+          <div class="description-zone">
+            <textarea
+              bind:value={user.description}
+              class="textarea is-primary"
+              placeholder="Primary textarea"
+            />
+          </div>
+        {/if}
+        <button
+          on:click={() => {
+            modDesc = !modDesc;
+          }}
+          class="button is-primary is-outlined"
+          >{mod
+            ? "Enregistrer la modification"
+            : "Modifier la description"}</button
+        >
+        <button
+          on:click={() => {
+            fetch(
+              "http://127.0.0.1:8000/delUser/" +
+                user.username +
+                "?password=toto",
+              {
+                method: "DELETE",
+              }
+            ).then(() => {
+              window.localStorage.clear();
+              location.href = "../login";
+            });
+          }}
+          class="button is-danger">Supprimer le compte</button
+        >
       </div>
     </div>
-    <div class="action-button">
-      {#if mod}
-        <div class="modify-user">
-          <input
-            bind:value={user.nom}
-            class="input is-primary"
-            placeholder="Prénom"
-            type="text"
-          />
-          <input
-            bind:value={user.prenom}
-            class="input is-primary "
-            placeholder="Nom de Famille"
-            type="text"
-          />
-        </div>
-      {/if}
-      <button
-        on:click={() => {
-          mod = !mod;
-        }}
-        class="button is-primary is-outlined"
-        >{mod
-          ? "Enregistrer les modifications"
-          : "Modifier l'utilisateur"}</button
-      >
-      {#if modDesc}
-        <div class="description-zone">
-          <textarea
-            bind:value={user.description}
-            class="textarea is-primary"
-            placeholder="Primary textarea"
-          />
-        </div>
-      {/if}
-      <button
-        on:click={() => {
-          modDesc = !modDesc;
-        }}
-        class="button is-primary is-outlined"
-        >{mod
-          ? "Enregistrer la modification"
-          : "Modifier la description"}</button
-      >
-      <button class="button is-danger">Supprimer le compte</button>
-    </div>
-  </div>
-</section>
+  </section>
+{/if}
 
 <style>
   section {
     width: 500px;
     margin: 50px auto;
+  }
+  .card-image img {
+    height: 260px;
   }
   .action-button {
     display: flex;
@@ -108,4 +146,8 @@
   .description-zone {
     padding: 10px;
   }
+
+  /* .card-image img {
+    height: 240px;
+  } */
 </style>
