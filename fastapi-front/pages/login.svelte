@@ -28,6 +28,7 @@
             localStorage.setItem("email", data.email);
             localStorage.setItem("motDePasse", data.motDePasse);
             localStorage.setItem("description", data.description);
+            localStorage.setItem("banner", data.banner);
             location.href = "./home/";
           } else {
             error = true;

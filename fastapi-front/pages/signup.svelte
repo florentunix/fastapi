@@ -2,12 +2,14 @@
   import base64 from "base-64";
   import User from "./user.svelte";
   let bannerEL;
+  let submit = false;
+  let error = false;
   const reader = new FileReader();
   let form = {
     username: "",
     nom: "",
     prenom: "",
-    mail: "",
+    email: "",
     motDePasse: "",
     confMotDePasse: "",
     description: "",
@@ -16,23 +18,24 @@
   };
   let fileExist = false;
   async function sendSignupForm() {
+    submit = true;
     for (let item in form) {
       if (item != "banner" && item != "check") {
         if (!item) return;
       }
     }
-    // fetch
-    // console.log(JSON.stringify(form));
     fetch("http://localhost:8000/addUser", {
       method: "POST",
       body: JSON.stringify(form),
+    }).then((response) => {
+      if (response.status == 404) error = true;
+      else error = false;
+
+      for (let item in form) {
+        form[item] = null;
+      }
     });
   }
-
-  // for (let item in form) {
-  //   console.log(form[item]);
-  // }
-  // console.log(base64.encode("Hello"));
 </script>
 
 <section>
@@ -90,7 +93,7 @@
   <div class="field">
     <div class="control has-icons-left has-icons-right">
       <input
-        bind:value={form.mail}
+        bind:value={form.email}
         class="input is-medium "
         type="email"
         placeholder="Adresse mail"
@@ -172,7 +175,11 @@
 
   <div class="field">
     <div class="control">
-      <textarea class="textarea" placeholder="Ajouter une description" />
+      <textarea
+        bind:value={form.description}
+        class="textarea"
+        placeholder="Ajouter une description"
+      />
     </div>
   </div>
 
@@ -190,6 +197,17 @@
       >Submit</button
     >
   </div>
+  {#if error == true && submit == true}
+    <div class="notification is-danger">
+      <button class="delete" />
+      Erreur lors de l'Inscription
+    </div>
+  {:else if error == false && submit == true}
+    <div class="notification is-primary">
+      <button class="delete" />
+      Inscription effcetuée avec succes ! Veuillez vous connecter
+    </div>
+  {/if}
 </section>
 
 <style>
