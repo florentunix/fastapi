@@ -3,7 +3,7 @@
   import User from "./user.svelte";
   let bannerEL;
   let submit = false;
-  let error = false;
+  let error;
   const reader = new FileReader();
   let form = {
     username: "",
@@ -21,7 +21,7 @@
     submit = true;
     for (let item in form) {
       if (item != "banner" && item != "check") {
-        if (!item) return;
+        if (!form[item]) return;
       }
     }
     fetch("http://localhost:8000/addUser", {
@@ -39,6 +39,17 @@
 </script>
 
 <section>
+  {#if error == true && submit == true}
+    <div class="notification is-danger">
+      <button class="delete" on:click={() => (submit = !submit)} />
+      Erreur lors de l'inscription, le nom d'utilisateur est indisponible.
+    </div>
+  {:else if error == false && submit == true}
+    <div class="notification is-primary">
+      <button class="delete" />
+      Inscription effcetuée avec succes ! Veuillez vous connecter
+    </div>
+  {/if}
   <div class="field">
     <div class="control has-icons-left has-icons-right">
       <input
@@ -197,17 +208,6 @@
       >Submit</button
     >
   </div>
-  {#if error == true && submit == true}
-    <div class="notification is-danger">
-      <button class="delete" />
-      Erreur lors de l'Inscription
-    </div>
-  {:else if error == false && submit == true}
-    <div class="notification is-primary">
-      <button class="delete" />
-      Inscription effcetuée avec succes ! Veuillez vous connecter
-    </div>
-  {/if}
 </section>
 
 <style>
@@ -240,5 +240,10 @@
     width: 100%;
     background-color: transparent;
     color: rgb(0, 0, 0, 0.1);
+  }
+  .notification {
+    position: absolute;
+    right: 10px;
+    top: 80px;
   }
 </style>

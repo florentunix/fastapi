@@ -1,4 +1,5 @@
 <script>
+  let src = "/assets/person.png";
   let userExist;
   // Change after by a session token
   if (!localStorage.getItem("username")) {
@@ -15,7 +16,54 @@
     description: localStorage.getItem("description"),
     username: localStorage.getItem("username"),
     banner: localStorage.getItem("banner"),
+    motDePasse: localStorage.getItem("motDePasse"),
   };
+
+  function sendNames() {
+    if (
+      user.nom &&
+      user.prenom &&
+      (user.nom != localStorage.getItem("nom") ||
+        user.prenom != localStorage.getItem("prenom"))
+    )
+      fetch(
+        "http://localhost:8000/modUser/" +
+          user.username +
+          "?password=" +
+          user.motDePasse +
+          "&nom=" +
+          user.nom +
+          "&prenom=" +
+          user.prenom,
+        {
+          method: "PUT",
+        }
+      ).then(async (response) => {
+        let newData = await response.json();
+        localStorage.setItem("nom", newData.nom);
+        localStorage.setItem("prenom", newData.prenom);
+      });
+  }
+  function sendDesc() {
+    if (
+      user.description &&
+      user.description != localStorage.getItem("description")
+    )
+      fetch(
+        "http://localhost:8000/modUser/" +
+          user.username +
+          "?password=" +
+          user.motDePasse +
+          "&description=" +
+          user.description,
+        {
+          method: "PUT",
+        }
+      ).then(async (response) => {
+        let newData = await response.json();
+        localStorage.setItem("description", newData.description);
+      });
+  }
 </script>
 
 {#if userExist}
@@ -35,10 +83,7 @@
         <div class="media">
           <div class="media-left">
             <figure class="image is-48x48">
-              <img
-                src="https://bulma.io/images/placeholders/96x96.png"
-                alt="Placeholderd"
-              />
+              <img {src} alt="Placeholderd" />
             </figure>
           </div>
           <div class="media-content">
@@ -74,6 +119,9 @@
         {/if}
         <button
           on:click={() => {
+            sendNames();
+          }}
+          on:click={() => {
             mod = !mod;
           }}
           class="button is-primary is-outlined"
@@ -91,6 +139,7 @@
           </div>
         {/if}
         <button
+          on:click={sendDesc}
           on:click={() => {
             modDesc = !modDesc;
           }}
@@ -104,7 +153,8 @@
             fetch(
               "http://127.0.0.1:8000/delUser/" +
                 user.username +
-                "?password=toto",
+                "?password=" +
+                user.motDePasse,
               {
                 method: "DELETE",
               }

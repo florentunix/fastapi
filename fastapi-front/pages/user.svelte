@@ -1,5 +1,6 @@
 <script>
   let error;
+  let src = "/assets/person.png";
   let user = {
     nom: "",
     prenom: "",
@@ -42,10 +43,7 @@
         <div class="media">
           <div class="media-left">
             <figure class="image is-48x48">
-              <img
-                src="https://bulma.io/images/placeholders/96x96.png"
-                alt="Placeholderd"
-              />
+              <img {src} alt="Placeholderd" />
             </figure>
           </div>
           <div class="media-content">

@@ -36,18 +36,8 @@
             form.password = null;
           }
         });
-
-      // let data = await JSON.stringify(request);
-      // console.log(data);
     }
   }
-  // (async () => {
-  //   await fetch("http://127.0.0.1:2002/login/domtom?password=xxxtt", {
-  //     method: "GET",
-  //   }).then((data) => {
-  //     console.log(data);
-  //   });
-  // })();
 </script>
 
 <section>
