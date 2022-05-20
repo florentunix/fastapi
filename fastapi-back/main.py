@@ -134,25 +134,36 @@ async def add_user(request: Request, response: Response):
 def mod_user(
         username,
         password,
-        nom: Optional[str] = None,
-        prenom: Optional[str] = None,
-        description: Optional[str] = None):
-
+        nom: Optional[str | None] = None,
+        prenom: Optional[str | None] = None,
+        description: Optional[str | None] = None):
     i = 1
+    B = {
+        "description": "",
+        "nom": "",
+        "prenom": ""
+    }
     with open("./JSON/Users.json") as file:
         data = json.load(file)
         for user in data["users"]:
-            if user["username"] == username and verify_hashed_password(
-                    password, user["motDePasse"]):
-                if description != " " and description != user["username"]:
+            if user["username"] == username and password == user["motDePasse"]:
+                B["description"] = user["description"]
+                B["nom"] = user["nom"]
+                B["prenom"] = user["prenom"]
+
+                if description != None and description != user["description"]:
                     user["description"] = description
+                    B["description"] = description
                 if nom != None and nom != user["nom"]:
                     user["nom"] = nom
+                    B["nom"] = nom
                 if prenom != None and prenom != user["prenom"]:
                     user["prenom"] = prenom
-
+                    B["prenom"] = prenom
     with open("./JSON/Users.json", "w") as file:
         json.dump(data, file, indent=3)
+
+    return B
 
 
 @app.delete("/delUser/{username}")
@@ -163,8 +174,9 @@ def del_user(username, password):
         data = json.load(file)
         # Seacrch user
         for user in data["users"]:
-            if user["username"] == username and verify_hashed_password(
-                    password.encode("utf-8"), user["motDePasse"].encode("utf-8")):
+            if user["username"] == username and password.encode("utf-8") == user["motDePasse"].encode("utf-8"):
+                # if user["username"] == username and verify_hashed_password(
+                #     password.encode("utf-8"), user["motDePasse"].encode("utf-8")):
                 data["users"].pop(i-1)
                 break
             i = i+1
