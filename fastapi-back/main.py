@@ -4,11 +4,13 @@ from operator import index
 from typing import Optional, Union
 import bcrypt
 from fastapi import FastAPI, Response, Request
+from requests import delete, request
 from tables import Description
 import uvicorn
 import json
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+import asyncio
 
 
 class User(BaseModel):
@@ -76,7 +78,7 @@ def log_user(username, password, response: Response):
         for user in dataToJSON["users"]:
             if(user["username"] == username):
                 if verify_hashed_password(
-                        password, user["motDePasse"]):
+                        password.encode("utf-8"), user["motDePasse"].encode("utf-8")):
                     return user
                 else:
                     response.status_code = 404
@@ -86,41 +88,46 @@ def log_user(username, password, response: Response):
 
 
 @app.post("/addUser")
-def add_user(user: Request, filename="./JSON/Users.json"):
-    print("Requete")
-    # data = json.loads(user)
-    # # user = {
-    # #     "id": int,
-    # #     "username": user.username,
-    # #     "nom": user.nom,
-    # #     "prenom": user.prenom,
-    # #     "motDePasse": user.motDePasse,
-    # #     "email": user.email,
-    # #     "description": user.description,
-    # #     "banner": user.banner
-    # # }
+async def add_user(request: Request, response: Response):
+    dataReceive = await request.json()
+    filename = "./JSON/Users.json"
+    user = {
+        "id": int,
+        "username": dataReceive["username"],
+        "nom": dataReceive["nom"],
+        "prenom": dataReceive["prenom"],
+        "motDePasse": dataReceive["motDePasse"],
+        "email": dataReceive["email"],
+        "description": dataReceive["description"],
+        "banner": dataReceive["banner"]
+    }
     # # Load the json a file
-    # with open(filename, "r+") as file:
-    #     # Extract data in json
-    #     data = json.load(file)
-    #     # Extract last ID
-    #     ID = 0
-    #     for temp in data["users"]:
-    #         ID = temp["id"]
-    #         if(temp["username"] == user["username"]):
-    #             return "Username Error"
-    #         if(temp["username"] == user["username"]):
-    #             return "Mail Error"
+    with open(filename, "r+") as file:
+        # Extract data in json
+        data = json.load(file)
+        # Extract last ID
+        ID = 0
+        for temp in data["users"]:
+            ID = temp["id"]
+            if(temp["username"] == user["username"]):
+                response.status_code = 404
+                return "Username Error"
+            if(temp["username"] == user["username"]):
+                response.status_code = 404
+                return "Mail Error"
+        # user = json.dumps()
+        # Set the next ID for the user
+        user["id"] = ID+1
+        # Hash the password
+        user["motDePasse"] = set_hashed_password(
+            user["motDePasse"].encode("utf-8"))
 
-    #     # Set the next ID for the user
-    #     user["id"] = ID+1
-    #     # Hash the password
-    #     user["motDePasse"] = set_hashed_password(user["motDePasse"])
-    # # Append the new user data
-    #     data["users"].append(user)
-    #     file.seek(0)
-    #     # Convert into JSON
-    #     json.dump(data, file, indent=3)
+        user["motDePasse"] = user["motDePasse"].decode("utf-8")
+        # # Append the new user data
+        data["users"].append(user)
+        file.seek(0)
+        # # Convert into JSON
+        json.dump(data, file, indent=3)
 
 
 @app.put("/modUser/{username}")
@@ -130,7 +137,7 @@ def mod_user(
         nom: Optional[str] = None,
         prenom: Optional[str] = None,
         description: Optional[str] = None):
-    #
+
     i = 1
     with open("./JSON/Users.json") as file:
         data = json.load(file)
@@ -157,14 +164,13 @@ def del_user(username, password):
         # Seacrch user
         for user in data["users"]:
             if user["username"] == username and verify_hashed_password(
-                    password, user["motDePasse"]):
+                    password.encode("utf-8"), user["motDePasse"].encode("utf-8")):
                 data["users"].pop(i-1)
                 break
             i = i+1
 
     with open("./JSON/Users.json", "w") as file:
         json.dump(data, file, indent=3)
-
 
     # Choix du port d'execution de notre API
 if __name__ == "__main__":
