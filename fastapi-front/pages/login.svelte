@@ -1,6 +1,7 @@
 <script>
   import { HOST, PORT } from "../scripts/config.js";
   import { fade, fly } from "svelte/transition";
+  import { onMount } from "svelte";
   let form = {
     username: "",
     password: "",
@@ -45,7 +46,13 @@
         });
     }
   }
-  if (localStorage.getItem("username")) location.href = "/home";
+
+  onMount(() => {
+    if (localStorage.getItem("username")) location.href = "/home";
+    else {
+      section.style.display = "flex";
+    }
+  });
 </script>
 
 <section bind:this={section}>
@@ -99,7 +106,7 @@
 </section>
 
 <style>
-  ::placeholder {
+  input::placeholder {
     color: rgba(255, 255, 255, 0.5);
   }
 
@@ -113,7 +120,8 @@
     margin: 150px auto;
     background-color: rgb(0, 0, 0, 0.5);
     height: 300px;
-    display: flex;
+    /* display: flex; */
+    display: none;
     justify-content: center;
     align-items: center;
     flex-direction: column;

@@ -44,6 +44,10 @@
   :global(body) {
     /* padding: 10px; */
     width: 100%;
+    box-sizing: border-box;
+  }
+  main {
+    min-height: 100%;
   }
   :global(a):hover {
     text-decoration: none;

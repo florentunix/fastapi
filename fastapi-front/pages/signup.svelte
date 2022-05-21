@@ -1,6 +1,7 @@
 <script>
   import { fly } from "svelte/transition";
   import { HOST, PORT } from "../scripts/config.js";
+  import { onMount } from "svelte";
   import base64 from "base-64";
   import User from "./user.svelte";
   let section;
@@ -39,10 +40,15 @@
       }
     });
   }
-  if (localStorage.getItem("username")) location.href = "/home";
+  onMount(() => {
+    if (localStorage.getItem("username")) location.href = "/home";
+    else {
+      section.style.display = "block";
+    }
+  });
 </script>
 
-<section>
+<section bind:this={section}>
   <p>Inscription</p>
 
   {#if error == true && submit == true}
@@ -237,6 +243,7 @@
     padding: 10px;
     background-color: rgb(0, 0, 0, 0.5);
     border-radius: 10px;
+    display: none;
   }
   section > p {
     text-align: center;

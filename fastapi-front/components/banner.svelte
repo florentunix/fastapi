@@ -3,12 +3,12 @@
 </script>
 
 <nav class="navbar is-light">
-  <i
+  <span
     on:click={() => {
       location.href = "/home";
     }}
-    class="bi bi-house-fill"
-  />
+    class="bi bi-house-fill">FastApi</span
+  >
   {#if url == "login"}
     <a href="/signup"
       ><button class="button is-light is-outlined">Inscription</button></a
@@ -40,7 +40,7 @@
     position: relative;
     background: transparent;
   }
-  nav > i {
+  nav > span {
     position: absolute;
     top: 50%;
     left: 15px;
