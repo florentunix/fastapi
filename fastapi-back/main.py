@@ -1,28 +1,16 @@
 # Importation des modules fastapi
-from cmath import log
-from operator import index
+# from cmath import log
+# from operator import index
 from typing import Optional, Union
 import bcrypt
 from fastapi import FastAPI, Response, Request
-from requests import delete, request
-from tables import Description
+# from requests import delete, request
+# from tables import Description
 import uvicorn
 import json
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-import asyncio
-
-
-class User(BaseModel):
-    username: Union[str, None] = None
-    nom: Union[str, None] = None
-    prenom: Union[str, None] = None
-    mail: Union[str, None] = None
-    motDePasse: Union[str, None] = None
-    confMotDePasse: Union[str, None] = None
-    description: Union[str, None] = None
-    banner: Union[str, None] = None
-    check: bool
+# from pydantic import BaseModel
+# import asyncio
 
 
 def set_hashed_password(password):
