@@ -1,14 +1,21 @@
 <script>
+  import { HOST, PORT } from "../scripts/config.js";
+  import { fade, fly } from "svelte/transition";
   let form = {
     username: "",
     password: "",
   };
+  let section;
   let error;
   async function sendLoginInfos() {
     error = false;
     if (form.username && form.password) {
       await fetch(
-        "http://127.0.0.1:8000/login/" +
+        "http://" +
+          HOST +
+          ":" +
+          PORT +
+          "/login/" +
           form.username +
           "?password=" +
           form.password,
@@ -38,14 +45,15 @@
         });
     }
   }
+  if (localStorage.getItem("username")) location.href = "/home";
 </script>
 
-<section>
+<section bind:this={section}>
   <div class="field">
     <div class="control has-icons-left has-icons-right">
       <input
         bind:value={form.username}
-        class="input is-medium is-primary"
+        class="input is-medium is-light"
         type="text"
         placeholder="Nom d'utilisateur"
       />
@@ -63,7 +71,7 @@
     <div class="control has-icons-left has-icons-right">
       <input
         bind:value={form.password}
-        class="input is-medium is-primary"
+        class="input is-medium is-light"
         type="password"
         placeholder="Mot de passe"
       />
@@ -72,26 +80,51 @@
       </span>
     </div>
     {#if error}
-      <p class="help is-danger">Nom d'utilisateur ou mot de passe incorrect</p>
+      <!-- <p class="help is-danger">Nom d'utilisateur ou mot de passe incorrect</p> -->
+      <div
+        transition:fly={{ x: 200, duration: 1000 }}
+        class="notification is-danger"
+      >
+        <button class="delete" on:click={() => (error = !error)} />
+        Le nom d'utilisateur ou le mot de passe est incorrect.
+      </div>
     {/if}
   </div>
   <div style="display:flex; justify-content:center" class="control">
-    <button on:click={sendLoginInfos} class="button is-medium is-primary"
-      >Connexion</button
+    <button
+      on:click={sendLoginInfos}
+      class="button is-medium is-outlined is-light">Connexion</button
     >
   </div>
 </section>
 
 <style>
+  ::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  input {
+    background: transparent;
+    color: #fff;
+  }
   section {
+    display: none;
     width: 400px;
     margin: 150px auto;
-    background-color: rgb(0, 0, 0, 0.1);
+    background-color: rgb(0, 0, 0, 0.5);
     height: 300px;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     border-radius: 10px;
+  }
+  button {
+    transition: all 0.5s ease;
+  }
+  .notification {
+    position: absolute;
+    right: 10px;
+    top: 80px;
   }
 </style>

@@ -1,4 +1,5 @@
 <script>
+  import { HOST, PORT } from "../scripts/config.js";
   let src = "/assets/person.png";
   let userExist;
   // Change after by a session token
@@ -27,7 +28,11 @@
         user.prenom != localStorage.getItem("prenom"))
     )
       fetch(
-        "http://localhost:8000/modUser/" +
+        "http://" +
+          HOST +
+          ":" +
+          PORT +
+          "/modUser/" +
           user.username +
           "?password=" +
           user.motDePasse +
@@ -50,7 +55,11 @@
       user.description != localStorage.getItem("description")
     )
       fetch(
-        "http://localhost:8000/modUser/" +
+        "http://" +
+          HOST +
+          ":" +
+          PORT +
+          "/modUser/" +
           user.username +
           "?password=" +
           user.motDePasse +
@@ -79,6 +88,7 @@
           />
         </figure>
       </div>
+
       <div class="card-content">
         <div class="media">
           <div class="media-left">
@@ -172,11 +182,22 @@
 
 <style>
   section {
+    /* padding: 10px; */
     width: 500px;
     margin: 50px auto;
+    border-radius: 10px;
   }
   .card-image img {
     height: 260px;
+  }
+
+  section * {
+    background-color: transparent;
+    color: #fff;
+  }
+  .card-content,
+  .action-button {
+    background-color: rgb(0, 0, 0, 0.5);
   }
   .action-button {
     display: flex;

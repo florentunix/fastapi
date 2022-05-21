@@ -1,6 +1,9 @@
 <script>
+  import { fly } from "svelte/transition";
+  import { HOST, PORT } from "../scripts/config.js";
   import base64 from "base-64";
   import User from "./user.svelte";
+  let section;
   let bannerEL;
   let submit = false;
   let error;
@@ -24,7 +27,7 @@
         if (!form[item]) return;
       }
     }
-    fetch("http://localhost:8000/addUser", {
+    fetch("http://" + HOST + ":" + PORT + "/addUser", {
       method: "POST",
       body: JSON.stringify(form),
     }).then((response) => {
@@ -36,17 +39,26 @@
       }
     });
   }
+  if (localStorage.getItem("username")) location.href = "/home";
 </script>
 
 <section>
+  <p>Inscription</p>
+
   {#if error == true && submit == true}
-    <div class="notification is-danger">
+    <div
+      transition:fly={{ x: 200, duration: 1000 }}
+      class="notification is-danger"
+    >
       <button class="delete" on:click={() => (submit = !submit)} />
       Erreur lors de l'inscription, le nom d'utilisateur est indisponible.
     </div>
   {:else if error == false && submit == true}
-    <div class="notification is-primary">
-      <button class="delete" />
+    <div
+      transition:fly={{ x: 200, duration: 1000 }}
+      class="notification is-primary"
+    >
+      <button class="delete" on:click={() => (submit = !submit)} />
       Inscription effcetuée avec succes ! Veuillez vous connecter
     </div>
   {/if}
@@ -54,7 +66,7 @@
     <div class="control has-icons-left has-icons-right">
       <input
         bind:value={form.nom}
-        class="input is-medium"
+        class="input is-medium is-light"
         type="text"
         placeholder="Nom de famille"
       />
@@ -70,7 +82,7 @@
     <div class="control has-icons-left has-icons-right">
       <input
         bind:value={form.prenom}
-        class=" is-medium input"
+        class=" is-medium input is-light"
         type="text"
         placeholder="Prénom"
       />
@@ -87,7 +99,7 @@
     <div class="control has-icons-left has-icons-right">
       <input
         bind:value={form.username}
-        class="input  is-medium"
+        class="input  is-medium is-light"
         type="text"
         placeholder="Nom d'utilisateur"
       />
@@ -105,7 +117,7 @@
     <div class="control has-icons-left has-icons-right">
       <input
         bind:value={form.email}
-        class="input is-medium "
+        class="input is-medium is-light"
         type="email"
         placeholder="Adresse mail"
       />
@@ -123,7 +135,7 @@
     <div class="control has-icons-left has-icons-right">
       <input
         bind:value={form.motDePasse}
-        class="input is-medium"
+        class="input is-medium is-light"
         type="password"
         placeholder="Mot de passe"
       />
@@ -140,7 +152,7 @@
     <div class="control has-icons-left has-icons-right">
       <input
         bind:value={form.confMotDePasse}
-        class="input  is-medium"
+        class="input  is-medium is-light"
         type="password"
         placeholder="Confirmation du mot de passe"
       />
@@ -157,7 +169,6 @@
     <label class="file-label">
       <input
         on:change={() => {
-          // console.log(form.banner.files[0]);
           // Lecture du fichier
           reader.onload = function () {
             form.banner = reader.result;
@@ -188,7 +199,7 @@
     <div class="control">
       <textarea
         bind:value={form.description}
-        class="textarea"
+        class="textarea is-light"
         placeholder="Ajouter une description"
       />
     </div>
@@ -211,14 +222,29 @@
 </section>
 
 <style>
+  ::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
+  .file * {
+    color: rgba(255, 255, 255, 0.5);
+  }
+  .file *:hover {
+    background-color: rgb(0, 0, 0, 0.5);
+  }
   section {
     width: 500px;
-    margin: 30px auto;
+    margin: 0px auto;
     padding: 10px;
+    background-color: rgb(0, 0, 0, 0.5);
+    border-radius: 10px;
   }
-  /* .is-left {
-    background-color: rgb(0, 0, 0, 0.1);
-  } */
+  section > p {
+    text-align: center;
+    font-size: 20px;
+    color: #fff;
+    margin: 0;
+    text-transform: uppercase;
+  }
 
   .submit-container {
     display: flex;
@@ -229,6 +255,13 @@
   }
   input {
     padding-left: 50px;
+    background: transparent;
+    color: #fff;
+  }
+  textarea {
+    background: transparent;
+    color: #fff;
+    font-size: 20px;
   }
   .file {
     width: 100%;

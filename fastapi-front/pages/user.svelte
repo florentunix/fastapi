@@ -1,4 +1,5 @@
 <script>
+  import { HOST, PORT } from "../scripts/config.js";
   let error;
   let src = "/assets/person.png";
   let user = {
@@ -12,7 +13,9 @@
   document.addEventListener("DOMContentLoaded", async () => {
     let path = document.location.toString().split("/");
     user.username = path[path.length - 1];
-    let response = await fetch("http://127.0.0.1:8000/user/" + user.username);
+    let response = await fetch(
+      "http://" + HOST + ":" + PORT + "/user/" + user.username
+    );
     if (response.status == 404) {
       error = true;
     } else {
@@ -67,6 +70,13 @@
 </section>
 
 <style>
+  section * {
+    background-color: transparent;
+    color: #fff;
+  }
+  .card-content {
+    background-color: rgb(0, 0, 0, 0.5);
+  }
   section {
     width: 500px;
     margin: 50px auto;
