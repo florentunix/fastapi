@@ -26,6 +26,8 @@
       )
         .catch(() => {
           error = true;
+          form.username = null;
+          form.password = null;
         })
         .then(async (response) => {
           if (response.status != 404) {

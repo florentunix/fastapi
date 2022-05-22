@@ -156,7 +156,7 @@
             modDesc = !modDesc;
           }}
           class="button is-primary is-outlined"
-          >{mod
+          >{modDesc
             ? "Enregistrer la modification"
             : "Modifier la description"}</button
         >
@@ -212,17 +212,21 @@
   }
 
   .modify-user {
-    width: 100%;
+    width: 80%;
     display: flex;
     justify-content: center;
     column-gap: 10px;
     padding: 10px 10px;
   }
+  /* .textarea {
+    
+  } */
   .modify-user input {
     text-align: center;
   }
   .description-zone {
     padding: 10px;
+    width: 80%;
   }
 
   /* .card-image img {
