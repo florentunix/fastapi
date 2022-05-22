@@ -9,14 +9,17 @@
   function getMessages() {
     fetch(`http://${HOST}:${PORT}/getMessages/${lastID}`, {
       method: "GET",
-    }).then(async (response) => {
-      messages = await response.json();
-      if (messages.length > 0) {
-        lastID = messages[messages.length - 1].id;
-        allMessages = allMessages.concat(messages);
+    })
+      .then(async (response) => {
+        messages = await response.json();
+        if (messages.length > 0) {
+          lastID = messages[messages.length - 1].id;
+          allMessages = allMessages.concat(messages);
+        }
+      })
+      .then(() => {
         chat.scrollTo(0, chat.scrollHeight);
-      }
-    });
+      });
   }
 
   let contentIsVisible = false;
@@ -24,7 +27,7 @@
     getMessages();
     setInterval(() => {
       getMessages();
-    }, 5000);
+    }, 1000);
   });
   let form = {
     content: "",
