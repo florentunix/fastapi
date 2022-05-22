@@ -1,4 +1,6 @@
 <script>
+  import Message from "../components/message.svelte";
+  // Add get request on reload
   import { HOST, PORT } from "../scripts/config.js";
   let src = "/assets/person.png";
   let userExist;
@@ -177,6 +179,7 @@
         >
       </div>
     </div>
+    <Message />
   </section>
 {/if}
 
@@ -202,6 +205,7 @@
   .action-button {
     display: flex;
     justify-content: center;
+    align-items: center;
     padding-bottom: 10px;
     flex-direction: column;
     row-gap: 10px;
@@ -224,4 +228,7 @@
   /* .card-image img {
     height: 240px;
   } */
+  button {
+    width: 80%;
+  }
 </style>

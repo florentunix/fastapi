@@ -221,7 +221,7 @@
   </div>
 
   <div class="control submit-container">
-    <button on:click={sendSignupForm} class="button is-primary is-outlined"
+    <button on:click={sendSignupForm} class="button is-light is-outlined"
       >Submit</button
     >
   </div>
@@ -285,5 +285,8 @@
     position: absolute;
     right: 10px;
     top: 80px;
+  }
+  button {
+    transition: all 0.5s ease;
   }
 </style>
