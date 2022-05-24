@@ -16,7 +16,7 @@ from fastapi.middleware.cors import CORSMiddleware
 # import asyncio
 
 # REMOVE LATER -> FOR ENCRYPTION
-# from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
+from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 
 
 def set_hashed_password(password):
@@ -40,7 +40,7 @@ app.add_middleware(
 )
 
 # REMOVE LATER -> FOR ENCRYPTION
-# app.add_middleware(HTTPSRedirectMiddleware)
+app.add_middleware(HTTPSRedirectMiddleware)
 
 
 @app.get("/")
@@ -76,6 +76,7 @@ def log_user(username, password, response: Response):
             if(user["username"] == username):
                 if verify_hashed_password(
                         password.encode("utf-8"), user["motDePasse"].encode("utf-8")):
+                    # response.headers.add_vary_header("")
                     return user
                 else:
                     response.status_code = 404
