@@ -15,6 +15,9 @@ from fastapi.middleware.cors import CORSMiddleware
 # from pydantic import BaseModel
 # import asyncio
 
+# REMOVE LATER -> FOR ENCRYPTION
+# from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
+
 
 def set_hashed_password(password):
     return bcrypt.hashpw(password, bcrypt.gensalt())
@@ -35,6 +38,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# REMOVE LATER -> FOR ENCRYPTION
+# app.add_middleware(HTTPSRedirectMiddleware)
 
 
 @app.get("/")
@@ -78,6 +84,23 @@ def log_user(username, password, response: Response):
         return "User not found "
 
 
+@app.get("/getMessages/{id}")
+async def get_message(id):
+    last_update = []
+    ID = int(id)
+    filename = "./JSON/Messages.json"
+    # Load the json a file
+    with open(filename, "r+") as file:
+        # Extract data in json
+        data = json.load(file)
+        # Extract new ID
+        for message in data['messages']:
+            if(message["id"] > ID):
+                # print(message)
+                last_update.append(message)
+    return last_update
+
+
 @app.post("/addUser")
 async def add_user(request: Request, response: Response):
     dataReceive = await request.json()
@@ -119,6 +142,35 @@ async def add_user(request: Request, response: Response):
         file.seek(0)
         # # Convert into JSON
         json.dump(data, file, indent=3)
+
+
+@app.post("/sendMessage")
+async def post_message(request: Request):
+    dataReceive = await request.json()
+    filename = "./JSON/Messages.json"
+    # print(dataReceive)
+    message = {
+        "id": int,
+        "content": dataReceive["content"],
+        "sender": dataReceive["username"]
+    }
+
+    # # Load the json a file
+    with open(filename, "r+") as file:
+        # Extract data in json
+        data = json.load(file)
+        # Extract last ID
+        ID = 0
+        for temp in data["messages"]:
+            ID = temp["id"]
+        message["id"] = ID+1
+        # # Append the new user data
+        data["messages"].append(message)
+        file.seek(0)
+        # # Convert into JSON
+        json.dump(data, file, indent=3)
+
+    return true
 
 
 @app.put("/modUser/{username}")
@@ -176,50 +228,33 @@ def del_user(username, password):
         json.dump(data, file, indent=3)
 
 
-@app.get("/getMessages/{id}")
-async def get_message(id):
-    last_update = []
-    ID = int(id)
-    filename = "./JSON/Messages.json"
-    # Load the json a file
-    with open(filename, "r+") as file:
-        # Extract data in json
-        data = json.load(file)
-        # Extract new ID
-        for message in data['messages']:
-            if(message["id"] > ID):
-                # print(message)
-                last_update.append(message)
-    return last_update
-
-
-@app.post("/sendMessage")
-async def post_message(request: Request):
+@app.delete("/deleteMessage")
+async def del_message(request: Request):
+    filename_user = "./JSON/Users.json"
+    filename_msg = "./JSON/Messages.json"
     dataReceive = await request.json()
-    filename = "./JSON/Messages.json"
-    # print(dataReceive)
-    message = {
-        "id": int,
-        "content": dataReceive["content"],
-        "sender": dataReceive["username"]
-    }
-
-    # # Load the json a file
-    with open(filename, "r+") as file:
+    username = dataReceive["username"]
+    password = dataReceive["password"]
+    message_id = dataReceive["id"]
+    with open(filename_user, "r+") as file_user:
         # Extract data in json
-        data = json.load(file)
-        # Extract last ID
-        ID = 0
-        for temp in data["messages"]:
-            ID = temp["id"]
-        message["id"] = ID+1
-        # # Append the new user data
-        data["messages"].append(message)
-        file.seek(0)
-        # # Convert into JSON
-        json.dump(data, file, indent=3)
+        data_user = json.load(file_user)
+        for user in data_user["users"]:
+            if user["username"] == username and password.encode("utf-8") == user["motDePasse"].encode("utf-8"):
+                with open(filename_msg, "r+") as file_msg:
+                    data_msg = json.load(file_msg)
+                    i = 1
+                    for message in data_msg["messages"]:
 
-    return true
+                        if(int(message_id) == message["id"]):
+                            # print(message["id"])
+                            data_msg["messages"].pop(i-1)
+                            file_msg.seek(0)
+                            # print(data_msg)
+                        i = i+1
+
+    with open("./JSON/Messages.json", "w") as file:
+        json.dump(data_msg, file, indent=3)
 
     # Choix du port d'execution de notre API
 if __name__ == "__main__":

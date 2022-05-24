@@ -2,23 +2,13 @@
    "messages": [
       {
          "id": 1,
-         "content": "Bonjour je suis Florent",
-         "sender": "etudiant_esp"
+         "content": "Hello my boy",
+         "sender": "florentazd"
       },
       {
          "id": 2,
-         "content": "Salut tu vas bien ?",
-         "sender": "flo"
-      },
-      {
-         "id": 3,
-         "content": "Qui peut voir mon message ?",
-         "sender": "flo"
-      },
-      {
-         "id": 4,
-         "content": "Bon petit test",
-         "sender": "flo"
+         "content": "Of course i'm ok",
+         "sender": "florentazd"
       }
    ]
 }
