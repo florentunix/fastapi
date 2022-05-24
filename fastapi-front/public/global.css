@@ -11,6 +11,7 @@ body::-webkit-scrollbar{
 body {
 	-ms-overflow-style: none;  
 	scrollbar-width: none;  
+	height: 100%;
   }
 /* Hide scroll bar */
 
