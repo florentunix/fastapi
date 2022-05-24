@@ -1,6 +1,6 @@
 <script>
   import { fly } from "svelte/transition";
-  import { HOST, PORT } from "../scripts/config.js";
+  import { API } from "../scripts/config.js";
   import { onMount } from "svelte";
   import base64 from "base-64";
   import User from "./user.svelte";
@@ -28,7 +28,7 @@
         if (!form[item]) return;
       }
     }
-    fetch("http://" + HOST + ":" + PORT + "/addUser", {
+    fetch(`${API}/addUser`, {
       method: "POST",
       body: JSON.stringify(form),
     }).then((response) => {

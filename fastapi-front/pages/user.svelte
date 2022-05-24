@@ -1,5 +1,5 @@
 <script>
-  import { HOST, PORT } from "../scripts/config.js";
+  import { API } from "../scripts/config.js";
   let error;
   let src = "/assets/person.png";
   let user = {
@@ -13,9 +13,7 @@
   document.addEventListener("DOMContentLoaded", async () => {
     let path = document.location.toString().split("/");
     user.username = path[path.length - 1];
-    let response = await fetch(
-      "http://" + HOST + ":" + PORT + "/user/" + user.username
-    );
+    let response = await fetch(`${API}/user/${user.username}`);
     if (response.status == 404) {
       error = true;
     } else {

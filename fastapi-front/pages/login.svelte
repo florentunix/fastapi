@@ -1,5 +1,5 @@
 <script>
-  import { HOST, PORT } from "../scripts/config.js";
+  import { API } from "../scripts/config.js";
   import { fade, fly } from "svelte/transition";
   import { onMount } from "svelte";
   let form = {
@@ -11,19 +11,9 @@
   async function sendLoginInfos() {
     error = false;
     if (form.username && form.password) {
-      await fetch(
-        "http://" +
-          HOST +
-          ":" +
-          PORT +
-          "/login/" +
-          form.username +
-          "?password=" +
-          form.password,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      )
+      await fetch(`${API}/login/${form.username}?password=${form.password}`, {
+        headers: { "Content-Type": "application/json" },
+      })
         .catch(() => {
           error = true;
           form.username = null;

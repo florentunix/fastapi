@@ -1,24 +1,29 @@
 <script>
   import { onMount } from "svelte";
-  import { HOST, PORT } from "../scripts/config.js";
+  import { API } from "../scripts/config.js";
   import { fly } from "svelte/transition";
   let lastID = 0;
   let messages;
   let chat;
+  let add;
   $: allMessages = [];
   function getMessages() {
-    fetch(`http://${HOST}:${PORT}/getMessages/${lastID}`, {
+    add = false;
+    fetch(`${API}/getMessages/${lastID}`, {
       method: "GET",
     })
       .then(async (response) => {
         messages = await response.json();
         if (messages.length > 0) {
           lastID = messages[messages.length - 1].id;
-          allMessages = allMessages.concat(messages);
+          allMessages = await allMessages.concat(messages);
+          add = true;
         }
       })
       .then(() => {
-        chat.scrollTo(0, chat.scrollHeight);
+        if (add == true) {
+          chat.scrollTo(0, chat.scrollHeight);
+        }
       });
   }
 
@@ -27,7 +32,7 @@
     getMessages();
     setInterval(() => {
       getMessages();
-    }, 1000);
+    }, 1200);
   });
   let form = {
     content: "",
@@ -57,19 +62,31 @@
         <div bind:this={chat} class="viewer">
           {#each allMessages as msg}
             {#if msg.sender == localStorage.getItem("username")}
-              <div class="out">
-                <span>Moi</span>
-                {msg.content}
+              <div class="out msg-{msg.id}">
+                <span class="name">Moi </span>
+                <p>{msg.content}</p>
               </div>
             {:else}
               <div class="in">
                 <span> <a href="../user/{msg.sender}"> {msg.sender}</a></span>
-                {msg.content}
+                <p>{msg.content}</p>
               </div>
             {/if}
           {/each}
         </div>
-        <form on:submit|preventDefault class="is-light">
+        <form
+          on:submit|preventDefault={() => {
+            if (form.content) {
+              fetch(`${API}/sendMessage`, {
+                method: "POST",
+                body: JSON.stringify(form),
+              }).then(() => {
+                form.content = null;
+              });
+            }
+          }}
+          class="is-light"
+        >
           <input
             type="text"
             class="message-input is-light"
@@ -80,7 +97,7 @@
           <p
             on:click={() => {
               if (form.content) {
-                fetch(`http://${HOST}:${PORT}/sendMessage`, {
+                fetch(`${API}/sendMessage`, {
                   method: "POST",
                   body: JSON.stringify(form),
                 }).then(() => {
@@ -99,6 +116,36 @@
   {/if}
 </section>
 
+<!-- <div class="trash">
+  <i
+  id={msg.id}
+  on:click={(e) => {
+    localStorage.setItem("id_message", e.target.id);
+    fetch(`${API}/deleteMessage`, {
+      method: "delete",
+      body: JSON.stringify({
+        id: localStorage.getItem("id_message"),
+        username: localStorage.getItem("username"),
+        password: localStorage.getItem("motDePasse"),
+      }),
+    }).then(() => {
+      document.querySelector(
+        ".msg-" + localStorage.getItem("id_message")
+      ).style.display = "none";
+      // for (let message in allMessages) {
+      //   if (
+      //     allMessages[message].id ==
+      //     localStorage.getItem("id_message")
+      //   )
+      //     allMessages.splice(message, 1);
+      //   allMessages = allMessages;
+      // }
+      // console.log(allMessages);
+    });
+  }}
+  class="bi bi-trash"
+/>
+</div> -->
 <style>
   section {
     width: 500px;
@@ -126,16 +173,19 @@
   }
   .section-header span {
     color: #fff;
+    font-weight: bolder;
     font-size: 20px;
+    text-transform: uppercase;
   }
   .section-header i {
     color: #fff;
     font-size: 30px;
   }
   .section-content {
-    max-height: 500px;
-    height: 500px;
+    max-height: 80vh;
+    height: 80vh;
     display: block;
+    width: 100%;
     padding: 10px;
   }
   .content {
@@ -195,14 +245,17 @@
   }
   .in,
   .out {
-    padding: 10px;
+    padding: 0px 10px 0 10px;
     margin-bottom: 10px;
     display: grid;
     grid-template-rows: 20px 1fr;
+    min-height: 60px;
     color: #fff;
+    box-sizing: border-box;
   }
   .in a,
   .out span {
+    width: 100%;
     border-bottom: 1px solid #000;
     color: #fff;
     font-weight: bold;
@@ -220,7 +273,28 @@
     position: relative;
     width: 100%;
     max-width: 100%;
+
     background-color: rgba(0, 0, 0, 0.5);
     border-radius: 10px;
   }
+  .in p,
+  .out p {
+    width: 100%;
+    display: flex;
+    /* align-items: center; */
+    padding-top: 2px;
+    overflow-wrap: break-word;
+  }
+  .name {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  /* .name i {
+    font-size: 20px;
+    display: none;
+  }
+  .out:hover .name i {
+    display: block;
+  } */
 </style>

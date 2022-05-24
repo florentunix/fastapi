@@ -1,7 +1,7 @@
 <script>
   import Message from "../components/message.svelte";
-  // Add get request on reload
-  import { HOST, PORT } from "../scripts/config.js";
+  //TODO: Add get request on reload
+  import { API } from "../scripts/config.js";
   let src = "/assets/person.png";
   let userExist;
   // Change after by a session token
@@ -30,18 +30,7 @@
         user.prenom != localStorage.getItem("prenom"))
     )
       fetch(
-        "http://" +
-          HOST +
-          ":" +
-          PORT +
-          "/modUser/" +
-          user.username +
-          "?password=" +
-          user.motDePasse +
-          "&nom=" +
-          user.nom +
-          "&prenom=" +
-          user.prenom,
+        `${API}/modUser/${user.username}?password=${user.motDePasse}&nom=${user.nom}&prenom=${user.prenom}`,
         {
           method: "PUT",
         }
@@ -57,16 +46,7 @@
       user.description != localStorage.getItem("description")
     )
       fetch(
-        "http://" +
-          HOST +
-          ":" +
-          PORT +
-          "/modUser/" +
-          user.username +
-          "?password=" +
-          user.motDePasse +
-          "&description=" +
-          user.description,
+        `${API}/modUser/${user.username}?password=${user.motDePasse}&description=${user.description}`,
         {
           method: "PUT",
         }
@@ -163,10 +143,7 @@
         <button
           on:click={() => {
             fetch(
-              "http://127.0.0.1:8000/delUser/" +
-                user.username +
-                "?password=" +
-                user.motDePasse,
+              `${API}/delUser/${user.username}?password=${user.motDePasse}`,
               {
                 method: "DELETE",
               }
