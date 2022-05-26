@@ -5,7 +5,7 @@
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
-    "start": "sirv public --no-clear --single --host -p 80"
+    "start": "sirv public --no-clear --host --single"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^17.0.0",
@@ -25,6 +25,7 @@
     "bulma": "^0.9.4",
     "font-awesome": "^4.7.0",
     "sirv-cli": "^2.0.0",
+    "socket.io-client": "^4.5.1",
     "svelte-routing": "^1.6.0"
   }
 }

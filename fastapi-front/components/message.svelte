@@ -1,43 +1,47 @@
 <script>
   import { onMount } from "svelte";
   import { API } from "../scripts/config.js";
-  import { fly } from "svelte/transition";
+  import { io } from "socket.io-client";
+
+  // Connect socket
+  const socket = io(API);
+  socket.connect();
+
+  //Save key on the localStorage
+  socket.on("connect", () => {
+    // console.log(socket.id);
+    localStorage.setItem("key", socket.id);
+  });
+
   let lastID = 0;
   let messages;
   let chat;
   let add;
   $: allMessages = [];
+
   function getMessages() {
     add = false;
     fetch(`${API}/getMessages/${lastID}`, {
       method: "GET",
-    })
-      .then(async (response) => {
-        messages = await response.json();
-        if (messages.length > 0) {
-          lastID = messages[messages.length - 1].id;
-          allMessages = await allMessages.concat(messages);
-          add = true;
-        }
-      })
-      .then(() => {
-        if (add == true) {
-          chat.scrollTo(0, chat.scrollHeight);
-        }
-      });
+    }).then(async (response) => {
+      allMessages = await response.json();
+    });
   }
+
+  socket.on("server-send-msg", async (data) => {
+    allMessages = await allMessages.concat(data);
+    setTimeout(() => {
+      chat.scrollTo(0, chat.scrollHeight);
+    }, 500);
+  });
 
   let contentIsVisible = false;
   onMount(() => {
     getMessages();
-    setInterval(() => {
-      getMessages();
-    }, 1200);
   });
   let form = {
     content: "",
     username: localStorage.getItem("username"),
-    //   Later you must add password section
   };
 </script>
 
@@ -74,15 +78,16 @@
             {/if}
           {/each}
         </div>
+
         <form
           on:submit|preventDefault={() => {
             if (form.content) {
-              fetch(`${API}/sendMessage`, {
-                method: "POST",
-                body: JSON.stringify(form),
-              }).then(() => {
-                form.content = null;
+              socket.emit("client-send-msg", {
+                sender: localStorage.getItem("username"),
+                content: form.content,
+                key: localStorage.getItem("key"),
               });
+              form.content = null;
             }
           }}
           class="is-light"
@@ -97,12 +102,12 @@
           <p
             on:click={() => {
               if (form.content) {
-                fetch(`${API}/sendMessage`, {
-                  method: "POST",
-                  body: JSON.stringify(form),
-                }).then(() => {
-                  form.content = null;
+                socket.emit("client-send-msg", {
+                  sender: localStorage.getItem("username"),
+                  content: form.content,
+                  key: localStorage.getItem("key"),
                 });
+                form.content = null;
               }
             }}
             class=" is-success submit has-icons-left"
@@ -156,6 +161,16 @@
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
   }
+  @media screen and (max-width: 500px) {
+    section {
+      width: 100%;
+      right: 0px;
+      background-color: rgb(99, 65, 65);
+    }
+    .section-header {
+      border-bottom: 0px;
+    }
+  }
   section * {
     /* transition: 1s all ease; */
     margin: 0;
@@ -187,6 +202,11 @@
     display: block;
     width: 100%;
     padding: 10px;
+  }
+  @media screen and (max-width: 500px) {
+    .section-content {
+      height: 70vh;
+    }
   }
   .content {
     height: 100%;

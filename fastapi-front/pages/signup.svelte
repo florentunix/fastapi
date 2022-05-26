@@ -245,6 +245,12 @@
     border-radius: 10px;
     display: none;
   }
+  @media screen and (max-width: 500px) {
+    section {
+      width: 90%;
+      margin: 20px auto;
+    }
+  }
   section > p {
     text-align: center;
     font-size: 20px;

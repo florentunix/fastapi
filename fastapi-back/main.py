@@ -1,6 +1,10 @@
 # Importation des modules fastapi
 # from cmath import log
 # from operator import index
+
+# from fastapi_socketio import SocketManager
+import socketio
+
 from email import message
 from fileinput import filename
 from typing import Optional, Union
@@ -16,7 +20,10 @@ from fastapi.middleware.cors import CORSMiddleware
 # import asyncio
 
 # REMOVE LATER -> FOR ENCRYPTION
-from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
+# from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
+
+# SOCKET IO
+sio = socketio.AsyncServer(cors_allowed_origins='*', async_mode='asgi')
 
 
 def set_hashed_password(password):
@@ -30,6 +37,64 @@ def verify_hashed_password(text_password, hashed_password):
 # create object of FastAPI class
 app = FastAPI()
 origins = ["*"]
+socketio_app = socketio.ASGIApp(sio, app)
+
+
+@sio.event
+def connect(sid, environ):
+    print('connect ', sid)
+
+
+@sio.on('client-send-msg')
+async def input_message(sid, data):
+    # Later test auth key
+    if(data["key"] == sid):
+        filename = "./JSON/Messages.json"
+        # # print(dataReceive)
+        message = {
+            "id": int,
+            "content": data["content"],
+            "sender": data["sender"]
+        }
+        # # Load the json a file
+        with open(filename, "r+") as file:
+            # Extract data in json
+            data = json.load(file)
+            # Extract last ID
+            ID = 0
+            for temp in data["messages"]:
+                ID = temp["id"]
+            message["id"] = ID+1
+            # # Append the new user data
+            data["messages"].append(message)
+            file.seek(0)
+            # # Convert into JSON
+            json.dump(data, file, indent=3)
+        # print(message["sender"])
+
+        await sio.emit('server-send-msg', {
+            'sender': message["sender"],
+            'content': message["content"]
+        })
+    pass
+
+    # return true
+# async def add(sid, data):
+#     print("Event is coming..")
+#     print(data)
+#     print(sid)
+#     await sio.emit('OK', {'data': 'foobar'}, room=sid)
+#     pass
+
+
+# @sio.on('server-send-msg')
+# async def showMe(sid, data):
+#     print("Event is coming..")
+#     print(data)
+#     print(sid)
+#     await sio.emit('OK', {'data': 'foobar'}, room=sid)
+#     pass
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -40,7 +105,7 @@ app.add_middleware(
 )
 
 # REMOVE LATER -> FOR ENCRYPTION
-app.add_middleware(HTTPSRedirectMiddleware)
+# app.add_middleware(HTTPSRedirectMiddleware)
 
 
 @app.get("/")
@@ -259,4 +324,7 @@ async def del_message(request: Request):
 
     # Choix du port d'execution de notre API
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(socketio_app, host="0.0.0.0", port=8000)
+
+# if __name__ == "__main__":
+#     uvicorn.run(socketio_app, host="0.0.0.0", port=8000)

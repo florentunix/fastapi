@@ -167,6 +167,14 @@
     margin: 50px auto;
     border-radius: 10px;
   }
+  @media screen and (max-width: 500px) {
+    section {
+      width: 100%;
+      border-radius: 0px;
+      margin: 10px auto;
+      height: 100%;
+    }
+  }
   .card-image img {
     height: 260px;
   }

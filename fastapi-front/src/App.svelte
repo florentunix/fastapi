@@ -4,6 +4,7 @@
   import Signup from "../pages/signup.svelte";
   import Index from "../pages/index.svelte";
   import User from "../pages/user.svelte";
+  import Error from "../pages/404.svelte";
 
   // COMPONENTS
   import Navbar from "../components/banner.svelte";
@@ -32,6 +33,7 @@
 <main>
   <Navbar url={nav_url} />
   <Router {url}>
+    <Route path="*"><Error /></Route>
     <Route path="/"><Index /></Route>
     <Route path="home/"><Home /></Route>
     <Route path="login"><Login /></Route>
@@ -47,6 +49,7 @@
     box-sizing: border-box;
   }
   main {
+    position: relative;
     min-height: 100%;
   }
   :global(a):hover {

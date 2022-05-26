@@ -40,6 +40,13 @@
     position: relative;
     background: transparent;
   }
+  /* @media screen and (max-width: 500px) {
+    nav {
+      position: absolute;
+      width: 100%;
+      top: 0px;
+    }
+  } */
   nav > span {
     position: absolute;
     top: 50%;
